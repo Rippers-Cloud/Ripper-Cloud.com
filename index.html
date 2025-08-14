@@ -1,0 +1,3197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rippers Cloud</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-purple: #6b46c1;
+            --secondary-purple: #9333ea;
+            --dark-purple: #4c1d95;
+            --light-purple: #c4b5fd;
+            --purple-gradient: linear-gradient(135deg, #6b46c1, #9333ea, #a855f7);
+            --dark-bg: #0f0f23;
+            --card-bg: rgba(107, 70, 193, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #e5e7eb;
+            --accent-glow: #a855f7;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        /* Welcome Screen Styles */
+        .welcome-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: var(--purple-gradient);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        .welcome-screen.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .welcome-logo {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 2rem;
+            animation: logoGlow 2s ease-in-out infinite alternate;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+        }
+
+        .welcome-tagline {
+            font-size: 1.5rem;
+            margin-bottom: 3rem;
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.5s forwards;
+            text-align: center;
+            max-width: 600px;
+        }
+
+        .welcome-loader {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            opacity: 0;
+            animation: fadeIn 1s ease 1s forwards, spin 1s linear 1s infinite;
+        }
+
+        @keyframes logoGlow {
+            0% { text-shadow: 0 0 30px rgba(255, 255, 255, 0.5); }
+            100% { text-shadow: 0 0 50px rgba(255, 255, 255, 0.8), 0 0 60px var(--accent-glow); }
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Background Animation */
+        .background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background: radial-gradient(ellipse at center, rgba(107, 70, 193, 0.1) 0%, transparent 70%);
+        }
+
+        .floating-clouds {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(168, 85, 247, 0.1);
+            border-radius: 100px;
+            filter: blur(1px);
+            animation: float 20s infinite linear;
+        }
+
+        .cloud:before {
+            content: '';
+            position: absolute;
+            background: rgba(168, 85, 247, 0.1);
+            border-radius: 100px;
+        }
+
+        .cloud:after {
+            content: '';
+            position: absolute;
+            background: rgba(168, 85, 247, 0.1);
+            border-radius: 100px;
+        }
+
+        .cloud1 {
+            width: 100px;
+            height: 40px;
+            top: 20%;
+            left: -150px;
+            animation-duration: 25s;
+        }
+
+        .cloud1:before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 10px;
+        }
+
+        .cloud1:after {
+            width: 60px;
+            height: 20px;
+            top: -10px;
+            right: 15px;
+        }
+
+        .cloud2 {
+            width: 80px;
+            height: 30px;
+            top: 50%;
+            left: -120px;
+            animation-duration: 30s;
+            animation-delay: -5s;
+        }
+
+        .cloud2:before {
+            width: 40px;
+            height: 40px;
+            top: -20px;
+            left: 15px;
+        }
+
+        .cloud2:after {
+            width: 50px;
+            height: 15px;
+            top: -5px;
+            right: 10px;
+        }
+
+        .cloud3 {
+            width: 120px;
+            height: 50px;
+            top: 80%;
+            left: -180px;
+            animation-duration: 35s;
+            animation-delay: -10s;
+        }
+
+        .cloud3:before {
+            width: 60px;
+            height: 60px;
+            top: -30px;
+            left: 20px;
+        }
+
+        .cloud3:after {
+            width: 70px;
+            height: 25px;
+            top: -15px;
+            right: 20px;
+        }
+
+        @keyframes float {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(calc(100vw + 200px)); }
+        }
+
+        /* Header Styles */
+        .header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(15, 15, 35, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .header.scrolled {
+            background: rgba(15, 15, 35, 0.95);
+            box-shadow: 0 2px 20px rgba(168, 85, 247, 0.2);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+            background: var(--purple-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-decoration: none;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-item {
+            position: relative;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+        }
+
+        .nav-link:hover {
+            color: var(--accent-glow);
+            background: rgba(168, 85, 247, 0.1);
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .social-link:hover {
+            background: var(--secondary-purple);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 2rem;
+            background: radial-gradient(ellipse at center, rgba(107, 70, 193, 0.2) 0%, transparent 50%);
+        }
+
+        .hero-content {
+            max-width: 800px;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            background: var(--purple-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 3s ease-in-out infinite alternate;
+        }
+
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+            opacity: 0;
+            animation: fadeInUp 1s ease 0.5s forwards;
+        }
+
+        .hero-description {
+            font-size: 1.1rem;
+            margin-bottom: 3rem;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            opacity: 0;
+            animation: fadeInUp 1s ease 1s forwards;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeInUp 1s ease 1.5s forwards;
+        }
+
+        .cta-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .cta-primary {
+            background: var(--purple-gradient);
+            color: white;
+        }
+
+        .cta-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.4);
+        }
+
+        .cta-secondary {
+            background: transparent;
+            color: var(--accent-glow);
+            border: 2px solid var(--accent-glow);
+        }
+
+        .cta-secondary:hover {
+            background: var(--accent-glow);
+            color: white;
+            transform: translateY(-3px);
+        }
+
+        @keyframes titleGlow {
+            0% { filter: drop-shadow(0 0 10px rgba(168, 85, 247, 0.5)); }
+            100% { filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.8)) drop-shadow(0 0 30px rgba(168, 85, 247, 0.6)); }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 3rem;
+            background: var(--purple-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(168, 85, 247, 0.2);
+            border-color: var(--accent-glow);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(168, 85, 247, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: var(--accent-glow);
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        /* Services Section */
+        .services {
+            padding: 5rem 2rem;
+            background: rgba(107, 70, 193, 0.05);
+        }
+
+        .services-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .service-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(168, 85, 247, 0.2);
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 30px rgba(168, 85, 247, 0.3);
+        }
+
+        .service-icon {
+            font-size: 2.5rem;
+            color: var(--accent-glow);
+            margin-bottom: 1rem;
+        }
+
+        .service-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        /* About Section */
+        .about {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+            margin-top: 3rem;
+        }
+
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .about-text h3 {
+            color: var(--accent-glow);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .about-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: var(--card-bg);
+            border-radius: 15px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--accent-glow);
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Pricing Section */
+        .pricing {
+            padding: 5rem 2rem;
+            background: rgba(107, 70, 193, 0.05);
+        }
+
+        .pricing-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .pricing-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .pricing-card.featured {
+            border-color: var(--accent-glow);
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.3);
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(168, 85, 247, 0.2);
+        }
+
+        .pricing-card.featured:hover {
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--accent-glow);
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .plan-period {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .plan-features li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            position: relative;
+            padding-left: 2rem;
+        }
+
+        .plan-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--accent-glow);
+            font-weight: bold;
+        }
+
+        .plan-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            background: var(--purple-gradient);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .plan-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Contact Section */
+        .contact {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-top: 3rem;
+        }
+
+        .contact-form {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 10px;
+            background: rgba(15, 15, 35, 0.5);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.3);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            background: var(--purple-gradient);
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.4);
+        }
+
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1.5rem;
+            background: var(--card-bg);
+            border-radius: 15px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .contact-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.2);
+        }
+
+        .contact-icon {
+            font-size: 1.5rem;
+            color: var(--accent-glow);
+        }
+
+        .contact-details h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-details p {
+            color: var(--text-secondary);
+        }
+
+        /* Footer */
+        .footer {
+            background: rgba(15, 15, 35, 0.8);
+            padding: 3rem 2rem 1rem;
+            margin-top: 5rem;
+            border-top: 1px solid rgba(168, 85, 247, 0.3);
+        }
+
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .footer-section h3 {
+            color: var(--accent-glow);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+        }
+
+        .footer-section p, .footer-section a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            line-height: 1.6;
+        }
+
+        .footer-section a:hover {
+            color: var(--accent-glow);
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(168, 85, 247, 0.2);
+            color: var(--text-secondary);
+        }
+
+        /* Scroll to Top Button */
+        .scroll-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--purple-gradient);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .scroll-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(168, 85, 247, 0.4);
+        }
+
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            transition: all 0.6s ease;
+        }
+
+        .slide-in-left.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .slide-in-right {
+            opacity: 0;
+            transform: translateX(50px);
+            transition: all 0.6s ease;
+        }
+
+        .slide-in-right.visible {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: rgba(15, 15, 35, 0.95);
+                flex-direction: column;
+                padding: 2rem;
+                gap: 1rem;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .social-links {
+                display: none;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.2rem;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .section-title {
+                font-size: 2rem;
+            }
+
+            .features-grid,
+            .services-grid,
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .about-content,
+            .contact-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .about-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .footer-social {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .welcome-logo {
+                font-size: 2.5rem;
+            }
+
+            .welcome-tagline {
+                font-size: 1.2rem;
+            }
+
+            .section-title {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Loading Animation */
+        .loading-dots {
+            display: inline-block;
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: ''; }
+            40% { content: '.'; }
+            60% { content: '..'; }
+            80%, 100% { content: '...'; }
+        }
+
+        /* Particle Effect */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--accent-glow);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: particleFloat 10s infinite linear;
+        }
+
+        @keyframes particleFloat {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.5;
+            }
+            90% {
+                opacity: 0.5;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--purple-gradient);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--secondary-purple);
+        }
+
+        /* Glow Effects */
+        .glow-effect {
+            position: relative;
+        }
+
+        .glow-effect::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: var(--purple-gradient);
+            border-radius: inherit;
+            filter: blur(10px);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+        }
+
+        .glow-effect:hover::before {
+            opacity: 0.7;
+        }
+
+        /* Typewriter Effect */
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid var(--accent-glow);
+            white-space: nowrap;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: var(--accent-glow); }
+        }
+
+        /* Testimonials Section */
+        .testimonials {
+            padding: 5rem 2rem;
+            background: rgba(107, 70, 193, 0.05);
+        }
+
+        .testimonials-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .testimonial-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(168, 85, 247, 0.2);
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--purple-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .author-info h4 {
+            color: var(--text-primary);
+            margin-bottom: 0.2rem;
+        }
+
+        .author-info p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* FAQ Section */
+        .faq {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .faq-container {
+            margin-top: 3rem;
+        }
+
+        .faq-item {
+            background: var(--card-bg);
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            border-color: var(--accent-glow);
+        }
+
+        .faq-question {
+            padding: 1.5rem 2rem;
+            background: none;
+            border: none;
+            width: 100%;
+            text-align: left;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .faq-question:hover {
+            color: var(--accent-glow);
+        }
+
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-icon {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            padding: 0 2rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 0 2rem 1.5rem;
+            max-height: 200px;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--dark-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--accent-glow);
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes modalSlideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        /* Newsletter Section */
+        .newsletter {
+            padding: 4rem 2rem;
+            background: var(--purple-gradient);
+            text-align: center;
+            margin: 5rem 0;
+        }
+
+        .newsletter-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .newsletter h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .newsletter p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            min-width: 250px;
+        }
+
+        .newsletter-btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            background: white;
+            color: var(--primary-purple);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .newsletter-btn:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: translateY(-2px);
+        }
+
+        /* Blog Section */
+        .blog {
+            padding: 5rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .blog-card {
+            background: var(--card-bg);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .blog-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(168, 85, 247, 0.2);
+        }
+
+        .blog-image {
+            height: 200px;
+            background: var(--purple-gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .blog-content {
+            padding: 2rem;
+        }
+
+        .blog-date {
+            color: var(--accent-glow);
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .blog-title {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .blog-excerpt {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .read-more {
+            color: var(--accent-glow);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .read-more:hover {
+            color: var(--secondary-purple);
+        }
+
+        /* Team Section */
+        .team {
+            padding: 5rem 2rem;
+            background: rgba(107, 70, 193, 0.05);
+        }
+
+        .team-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .team-card {
+            background: var(--card-bg);
+            padding: 2rem;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(168, 85, 247, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(168, 85, 247, 0.2);
+        }
+
+        .team-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: var(--purple-gradient);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .team-name {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .team-role {
+            color: var(--accent-glow);
+            margin-bottom: 1rem;
+        }
+
+        .team-bio {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .team-social {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .team-social a {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: rgba(168, 85, 247, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-glow);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .team-social a:hover {
+            background: var(--accent-glow);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div class="welcome-screen" id="welcomeScreen">
+        <div class="welcome-logo">Rippers Cloud</div>
+        <div class="welcome-tagline">Unleashing the Power of Tomorrow's Cloud</div>
+        <div class="welcome-loader"></div>
+    </div>
+
+    <!-- Background Animation -->
+    <div class="background-animation">
+        <div class="floating-clouds">
+            <div class="cloud cloud1"></div>
+            <div class="cloud cloud2"></div>
+            <div class="cloud cloud3"></div>
+        </div>
+    </div>
+
+    <!-- Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Header -->
+    <header class="header" id="header">
+        <nav class="nav-container">
+            <a href="#" class="logo">Rippers Cloud</a>
+            <ul class="nav-menu" id="navMenu">
+                <li class="nav-item"><a href="#home" class="nav-link">Home</a></li>
+                <li class="nav-item"><a href="#features" class="nav-link">Features</a></li>
+                <li class="nav-item"><a href="#services" class="nav-link">Services</a></li>
+                <li class="nav-item"><a href="#pricing" class="nav-link">Pricing</a></li>
+                <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="social-links">
+                <a href="https://github.com/Rippers-Cloud" class="social-link" target="_blank" title="GitHub">
+                    <i class="fab fa-github"></i>
+                </a>
+                <a href="https://x.com" class="social-link" target="_blank" title="X (Twitter)">
+                    <i class="fab fa-x-twitter"></i>
+                </a>
+                <a href="https://facebook.com" class="social-link" target="_blank" title="Facebook">
+                    <i class="fab fa-facebook-f"></i>
+                </a>
+                <a href="https://t.me" class="social-link" target="_blank" title="Telegram">
+                    <i class="fab fa-telegram-plane"></i>
+                </a>
+            </div>
+            <button class="mobile-menu-btn" id="mobileMenuBtn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Hero Section -->
+        <section class="hero" id="home">
+            <div class="hero-content">
+                <h1 class="hero-title">Rippers Cloud</h1>
+                <p class="hero-subtitle">Next Generation Cloud Solutions</p>
+                <p class="hero-description">
+                    Experience the future of cloud computing with our cutting-edge infrastructure, 
+                    lightning-fast performance, and unparalleled security. Built for developers, 
+                    scaled for enterprises, trusted by millions.
+                </p>
+                <div class="cta-buttons">
+                    <a href="#" class="cta-btn cta-primary glow-effect">
+                        <i class="fas fa-rocket"></i>
+                        Get Started Free
+                    </a>
+                    <a href="#" class="cta-btn cta-secondary">
+                        <i class="fas fa-play"></i>
+                        Watch Demo
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="features fade-in" id="features">
+            <div class="features-container">
+                <h2 class="section-title">Powerful Features</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <i class="fas fa-bolt feature-icon"></i>
+                        <h3 class="feature-title">Lightning Fast Performance</h3>
+                        <p class="feature-description">
+                            Experience blazing-fast load times with our globally distributed CDN 
+                            and optimized infrastructure built for speed.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-shield-alt feature-icon"></i>
+                        <h3 class="feature-title">Enterprise Security</h3>
+                        <p class="feature-description">
+                            Bank-level security with end-to-end encryption, DDoS protection, 
+                            and compliance with industry standards.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-expand-arrows-alt feature-icon"></i>
+                        <h3 class="feature-title">Auto Scaling</h3>
+                        <p class="feature-description">
+                            Automatically scale your resources up or down based on demand, 
+                            ensuring optimal performance and cost efficiency.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-clock feature-icon"></i>
+                        <h3 class="feature-title">99.9% Uptime</h3>
+                        <p class="feature-description">
+                            Guaranteed uptime with redundant systems and real-time monitoring 
+                            to keep your applications running 24/7.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-cogs feature-icon"></i>
+                        <h3 class="feature-title">Easy Integration</h3>
+                        <p class="feature-description">
+                            Seamlessly integrate with your existing tools and workflows using 
+                            our comprehensive API and SDK libraries.
+                        </p>
+                    </div>
+                    <div class="feature-card">
+                        <i class="fas fa-headset feature-icon"></i>
+                        <h3 class="feature-title">24/7 Support</h3>
+                        <p class="feature-description">
+                            Get expert help whenever you need it with our round-the-clock 
+                            support team and extensive documentation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Services Section -->
+        <section class="services slide-in-left" id="services">
+            <div class="services-container">
+                <h2 class="section-title">Our Services</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <i class="fas fa-cloud service-icon"></i>
+                        <h3 class="service-title">Cloud Hosting</h3>
+                        <p>Reliable and scalable cloud hosting solutions for your applications.</p>
+                    </div>
+                    <div class="service-card">
+                        <i class="fas fa-database service-icon"></i>
+                        <h3 class="service-title">Database Management</h3>
+                        <p>Managed database services with automatic backups and optimization.</p>
+                    </div>
+                    <div class="service-card">
+                        <i class="fas fa-server service-icon"></i>
+                        <h3 class="service-title">Virtual Servers</h3>
+                        <p>High-performance virtual private servers with full root access.</p>
+                    </div>
+                    <div class="service-card">
+                        <i class="fas fa-network-wired service-icon"></i>
+                        <h3 class="service-title">CDN Services</h3>
+                        <p>Global content delivery network for faster website performance.</p>
+                    </div>
+                    <div class="service-card">
+                        <i class="fas fa-lock service-icon"></i>
+                        <h3 class="service-title">Security Suite</h3>
+                        <p>Comprehensive security solutions to protect your digital assets.</p>
+                    </div>
+                    <div class="service-card">
+                        <i class="fas fa-chart-line service-icon"></i>
+                        <h3 class="service-title">Analytics</h3>
+                        <p>Advanced analytics and monitoring tools for better insights.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section class="about slide-in-right" id="about">
+            <div class="about-container">
+                <h2 class="section-title">About Rippers Cloud</h2>
+                <div class="about-content">
+                    <div class="about-text">
+                        <h3>Pioneering the Future of Cloud Computing</h3>
+                        <p>
+                            Rippers Cloud is a cloud-powered brute-force simulation platform built for ethical hackers and security analysts to test password strength under controlled, 
+                            legal conditions. Using distributed cloud computing, it can rapidly attempt large volumes of password combinations to evaluate system resilience. 
+                            This service is strictly for environments where explicit permission has been granted, ensuring compliance with cybersecurity laws. 
+                            Test results, including success rates and recommended mitigations, are securely sent to a connected Telegram channel for real-time monitoring. By simulating                             
+                            high-intensity attacks safely, Rippers Cloud helps organizations strengthen authentication systems and prepare against real-world cyber threats.
+                        </p>
+                        <p>
+                            Our mission is simple: to empower businesses of all sizes with cutting-edge 
+                            cloud infrastructure that scales with their ambitions. Whether you're a 
+                            startup looking to launch your first application or an enterprise managing 
+                            complex workloads, we have the tools and expertise to help you succeed.
+                        </p>
+                    </div>
+                    <div class="about-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" data-count="50000">0</span>
+                            <div class="stat-label">Active Users</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" data-count="99.9">0</span>
+                            <div class="stat-label">% Uptime</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" data-count="25">0</span>
+                            <div class="stat-label">Global Regions</div>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" data-count="1000">0</span>
+                            <div class="stat-label">TB Data Processed</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Pricing Section -->
+        <section class="pricing fade-in" id="pricing">
+            <div class="pricing-container">
+                <h2 class="section-title">Choose Your Plan</h2>
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <div class="plan-name">Starter</div>
+                        <div class="plan-price">$9<span style="font-size: 1rem; font-weight: normal;">/month</span></div>
+                        <div class="plan-period">Perfect for small projects</div>
+                        <ul class="plan-features">
+                            <li>1 CPU Core</li>
+                            <li>2GB RAM</li>
+                            <li>50GB SSD Storage</li>
+                            <li>1TB Bandwidth</li>
+                            <li>Basic Support</li>
+                        </ul>
+                        <button class="plan-btn">Get Started</button>
+                    </div>
+                    <div class="pricing-card featured">
+                        <div class="plan-name">Professional</div>
+                        <div class="plan-price">$4000<span style="font-size: 1rem; font-weight: normal;">/month</span></div>
+                        <div class="plan-period">Most popular choice</div>
+                        <ul class="plan-features">
+                            <li>4 CPU Cores</li>
+                            <li>8GB RAM</li>
+                            <li>200GB SSD Storage</li>
+                            <li>5TB Bandwidth</li>
+                            <li>Priority Support</li>
+                            <li>Advanced Security</li>
+                        </ul>
+                        <button class="plan-btn">Get Started</button>
+                    </div>
+                    <div class="pricing-card">
+                        <div class="plan-name">Enterprise</div>
+                        <div class="plan-price">$1000<span style="font-size: 1rem; font-weight: normal;">/month</span></div>
+                        <div class="plan-period">For large-scale applications</div>
+                        <ul class="plan-features">
+                            <li>16 CPU Cores</li>
+                            <li>32GB RAM</li>
+                            <li>1TB SSD Storage</li>
+                            <li>Unlimited Bandwidth</li>
+                            <li>24/7 Dedicated Support</li>
+                            <li>Custom Solutions</li>
+                        </ul>
+                        <button class="plan-btn">Contact Sales</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Testimonials Section -->
+        <section class="testimonials slide-in-left">
+            <div class="testimonials-container">
+                <h2 class="section-title">What Our Clients Say</h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">
+                            "Rippers Cloud has transformed our infrastructure. The performance gains 
+                            have been incredible, and their support team is always there when we need them."
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">JS</div>
+                            <div class="author-info">
+                                <h4>John Smith</h4>
+                                <p>CTO, TechStart Inc.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">
+                            "The scalability and reliability we get from Rippers Cloud is unmatched. 
+                            It's allowed us to focus on building great products instead of managing infrastructure."
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">MJ</div>
+                            <div class="author-info">
+                                <h4>Maria Johnson</h4>
+                                <p>Founder, CloudApp Solutions</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <p class="testimonial-text">
+                            "Migrating to Rippers Cloud was the best decision we made this year. 
+                            Our applications are faster, more secure, and cost-effective."
+                        </p>
+                        <div class="testimonial-author">
+                            <div class="author-avatar">DL</div>
+                            <div class="author-info">
+                                <h4>David Lee</h4>
+                                <p>DevOps Engineer, Digital Corp</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq fade-in">
+            <div class="faq-container">
+                <h2 class="section-title">Frequently Asked Questions</h2>
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            What makes Rippers Cloud different from other providers?
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>We focus on performance, security, and user experience. Our infrastructure is built on the latest technology with global edge locations, ensuring your applications run fast and reliably worldwide.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            How quickly can I get started?
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>You can be up and running in minutes! Simply sign up, choose your plan, and deploy your first application. Our intuitive dashboard makes it easy to manage your resources.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            Do you offer migration assistance?
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>Yes! Our expert migration team will help you seamlessly transfer your existing applications and data to our platform with minimal downtime.</p>
+                        </div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            What kind of support do you provide?
+                            <i class="fas fa-chevron-down faq-icon"></i>
+                        </button>
+                        <div class="faq-answer">
+                            <p>We offer 24/7 support through multiple channels including live chat, email, and phone. Our support team consists of cloud experts ready to help with any technical challenges.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="team slide-in-right">
+            <div class="team-container">
+                <h2 class="section-title">Meet Our Team</h2>
+                <div class="team-grid">
+                    <div class="team-card">
+                        <div class="team-avatar">Founder</div>
+                        <h3 class="team-name">Ian Carter Kulani</h3>
+                        <p class="team-role">CEO & Founder</p>
+                        <p class="team-bio">Former cloud architect with 10+ years experience in scaling distributed systems.</p>
+                        <div class="team-social">
+                            <a href="https://www.linkedin.com/in/ian-carter-kulani-913679255/"><i class="fab fa-linkedin-in"></i></a>
+                            <a href="https://x.com/Iankulani"><i class="fab fa-twitter"></i></a>
+                            <a href="https://github.com/Iankulani"><i class="fab fa-github"></i></a>
+                        </div>
+                    </div>
+                    
+                        </div>
+                    </div>
+                    
+                        </div>
+                    </div>
+                    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Blog Section -->
+        <section class="blog fade-in">
+            <div class="blog-container">
+                <h2 class="section-title">Latest from Our Blog</h2>
+                <div class="blog-grid">
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="blog-content">
+                            <div class="blog-date">March 15, 2025</div>
+                            <h3 class="blog-title">The Future of Cloud Computing: Trends to Watch</h3>
+                            <p class="blog-excerpt">
+                                Explore the emerging trends shaping the cloud industry and how they'll impact your business strategy in the coming years.
+                            </p>
+                            <a href="#" class="read-more">Read More →</a>
+                        </div>
+                    </article>
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="blog-content">
+                            <div class="blog-date">March 10, 2025</div>
+                            <h3 class="blog-title">Cloud Security Best Practices for 2024</h3>
+                            <p class="blog-excerpt">
+                                Learn essential security measures to protect your cloud infrastructure and data from evolving cyber threats.
+                            </p>
+                            <a href="#" class="read-more">Read More →</a>
+                        </div>
+                    </article>
+                    <article class="blog-card">
+                        <div class="blog-image">
+                            <i class="fas fa-rocket"></i>
+                        </div>
+                        <div class="blog-content">
+                            <div class="blog-date">March 5, 2024</div>
+                            <h3 class="blog-title">Optimizing Performance with Edge Computing</h3>
+                            <p class="blog-excerpt">
+                                Discover how edge computing can dramatically improve your application performance and user experience.
+                            </p>
+                            <a href="#" class="read-more">Read More →</a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="newsletter">
+            <div class="newsletter-container">
+                <h2>Stay Updated</h2>
+                <p>Get the latest news, updates, and insights from Rippers Cloud delivered to your inbox.</p>
+                <form class="newsletter-form" id="newsletterForm">
+                    <input type="email" class="newsletter-input" placeholder="Enter your email address" required>
+                    <button type="submit" class="newsletter-btn">Subscribe</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact slide-in-left" id="contact">
+            <div class="contact-container">
+                <h2 class="section-title">Get in Touch</h2>
+                <div class="contact-content">
+                    <form class="contact-form" id="contactForm">
+                        <div class="form-group">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" id="name" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" id="email" class="form-input" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="company" class="form-label">Company</label>
+                            <input type="text" id="company" class="form-input">
+                        </div>
+                        <div class="form-group">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea id="message" class="form-textarea" required></textarea>
+                        </div>
+                        <button type="submit" class="submit-btn glow-effect">Send Message</button>
+                    </form>
+                    <div class="contact-info">
+                        <div class="contact-item">
+                            <i class="fas fa-map-marker-alt contact-icon"></i>
+                            <div class="contact-details">
+                                <h4>Address</h4>
+                                <p>123 Cloud Street<br>Tech City, TC 12345</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-phone contact-icon"></i>
+                            <div class="contact-details">
+                                <h4>Phone</h4>
+                                <p>+265 988061969</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-envelope contact-icon"></i>
+                            <div class="contact-details">
+                                <h4>Email</h4>
+                                <p>iancarterkulani@gmail.com</p>
+                            </div>
+                        </div>
+                        <div class="contact-item">
+                            <i class="fas fa-clock contact-icon"></i>
+                            <div class="contact-details">
+                                <h4>Business Hours</h4>
+                                <p>Monday - Friday<br>9:00 AM - 6:00 PM EST</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>Rippers Cloud</h3>
+                    <p>Empowering businesses with next-generation cloud solutions. Built for performance, designed for scale, trusted by thousands.</p>
+                    <div class="footer-social">
+                        <a href="https://github.com" class="social-link" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://x.com" class="social-link" target="_blank">
+                            <i class="fab fa-x-twitter"></i>
+                        </a>
+                        <a href="https://facebook.com" class="social-link" target="_blank">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="https://t.me" class="social-link" target="_blank">
+                            <i class="fab fa-telegram-plane"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Cloud Hosting</a></li>
+                        <li><a href="#">Database Management</a></li>
+                        <li><a href="#">Virtual Servers</a></li>
+                        <li><a href="#">CDN Services</a></li>
+                        <li><a href="#">Security Suite</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Our Team</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Partners</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Support</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Status Page</a></li>
+                        <li><a href="#">Contact Support</a></li>
+                        <li><a href="#">Community</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2063 Rippers Cloud. All rights reserved. | Privacy Policy | Terms of Service | Cookie Policy</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scrollTopBtn">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Success Modal -->
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+            <h3 style="color: var(--accent-glow); margin-bottom: 1rem;">Success!</h3>
+            <p>Thank you for your message. We'll get back to you soon!</p>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Welcome Screen Animation
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('welcomeScreen').classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }, 3000);
+        });
+
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const navMenu = document.getElementById('navMenu');
+        
+        mobileMenuBtn.addEventListener('click', function() {
+            navMenu.classList.toggle('active');
+            const icon = this.querySelector('i');
+            icon.classList.toggle('fa-bars');
+            icon.classList.toggle('fa-times');
+        });
+
+        // Header Scroll Effect
+        window.addEventListener('scroll', function() {
+            const header = document.getElementById('header');
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+                scrollTopBtn.classList.add('visible');
+            } else {
+                header.classList.remove('scrolled');
+                scrollTopBtn.classList.remove('visible');
+            }
+        });
+
+        // Smooth Scrolling for Navigation Links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+                
+                // Close mobile menu if open
+                navMenu.classList.remove('active');
+                const icon = mobileMenuBtn.querySelector('i');
+                icon.classList.add('fa-bars');
+                icon.classList.remove('fa-times');
+            });
+        });
+
+        // Scroll to Top Button
+        document.getElementById('scrollTopBtn').addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Intersection Observer for Animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        // Observe all elements with animation classes
+        document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Animated Counter for Statistics
+        function animateCounter(element, target) {
+            let current = 0;
+            const increment = target / 100;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) {
+                    current = target;
+                    clearInterval(timer);
+                }
+                
+                if (target === 99.9) {
+                    element.textContent = current.toFixed(1);
+                } else {
+                    element.textContent = Math.floor(current).toLocaleString();
+                }
+            }, 20);
+        }
+
+        // Trigger counters when about section is visible
+        const aboutObserver = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const counters = entry.target.querySelectorAll('.stat-number');
+                    counters.forEach(counter => {
+                        const target = parseInt(counter.dataset.count) || parseFloat(counter.dataset.count);
+                        animateCounter(counter, target);
+                    });
+                    aboutObserver.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        const aboutSection = document.querySelector('.about');
+        if (aboutSection) {
+            aboutObserver.observe(aboutSection);
+        }
+
+        // FAQ Toggle Functionality
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', function() {
+                const faqItem = this.parentElement;
+                const isActive = faqItem.classList.contains('active');
+                
+                // Close all FAQ items
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Open clicked item if it wasn't active
+                if (!isActive) {
+                    faqItem.classList.add('active');
+                }
+            });
+        });
+
+        // Contact Form Handling
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Simulate form submission
+            const submitBtn = this.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                showModal('successModal');
+                this.reset();
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 1500);
+        });
+
+        // Newsletter Form Handling
+        document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const submitBtn = this.querySelector('.newsletter-btn');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Subscribing...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                alert('Thank you for subscribing to our newsletter!');
+                this.reset();
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 1000);
+        });
+
+        // Modal Functions
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal() {
+            document.querySelectorAll('.modal').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // Close modal when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+        });
+
+        // Particle System
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 50;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 10 + 's';
+                particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                particlesContainer.appendChild(particle);
+            }
+        }
+
+        // Initialize particles
+        createParticles();
+
+        // Parallax Effect for Hero Section
+        window.addEventListener('scroll', function() {
+            const scrolled = window.pageYOffset;
+            const hero = document.querySelector('.hero');
+            const clouds = document.querySelectorAll('.cloud');
+            
+            if (hero) {
+                const heroOffset = scrolled * 0.5;
+                hero.style.transform = `translateY(${heroOffset}px)`;
+            }
+            
+            clouds.forEach((cloud, index) => {
+                const speed = 0.2 + (index * 0.1);
+                cloud.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        // Typewriter Effect for Hero Title
+        function typeWriter(element, text, speed = 100) {
+            let i = 0;
+            element.innerHTML = '';
+            
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            
+            type();
+        }
+
+        // Initialize typewriter effect after welcome screen
+        setTimeout(() => {
+            const heroTitle = document.querySelector('.hero-title');
+            if (heroTitle) {
+                const originalText = heroTitle.textContent;
+                typeWriter(heroTitle, originalText, 150);
+            }
+        }, 3500);
+
+        // Dynamic Background Colors
+        function updateBackgroundGradient() {
+            const scrollPercent = window.scrollY / (document.documentElement.scrollHeight - window.innerHeight);
+            const hue = 250 + (scrollPercent * 60); // Purple to blue gradient
+            
+            document.documentElement.style.setProperty('--dynamic-bg', 
+                `linear-gradient(135deg, hsl(${hue}, 60%, 20%), hsl(${hue + 20}, 60%, 15%))`
+            );
+        }
+
+        window.addEventListener('scroll', updateBackgroundGradient);
+
+        // Loading States for Buttons
+        function addLoadingState(button, loadingText = 'Loading...', duration = 2000) {
+            const originalText = button.textContent;
+            const originalHTML = button.innerHTML;
+            
+            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText}`;
+            button.disabled = true;
+            
+            setTimeout(() => {
+                button.innerHTML = originalHTML;
+                button.disabled = false;
+            }, duration);
+        }
+
+        // Add click handlers for CTA buttons
+        document.querySelectorAll('.cta-btn, .plan-btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                if (this.classList.contains('cta-primary') || this.classList.contains('plan-btn')) {
+                    e.preventDefault();
+                    addLoadingState(this, 'Setting up...', 2000);
+                }
+            });
+        });
+
+        // Floating Action Buttons
+        function createFloatingButtons() {
+            const floatingContainer = document.createElement('div');
+            floatingContainer.className = 'floating-actions';
+            floatingContainer.style.cssText = `
+                position: fixed;
+                bottom: 100px;
+                right: 2rem;
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                z-index: 999;
+            `;
+            
+            // Chat button
+            const chatBtn = document.createElement('button');
+            chatBtn.innerHTML = '<i class="fas fa-comments"></i>';
+            chatBtn.className = 'scroll-top';
+            chatBtn.style.backgroundColor = '#25d366';
+            chatBtn.title = 'Live Chat';
+            chatBtn.addEventListener('click', () => {
+                alert('Live chat feature coming soon!');
+            });
+            
+            floatingContainer.appendChild(chatBtn);
+            document.body.appendChild(floatingContainer);
+        }
+
+        // Initialize floating buttons
+        createFloatingButtons();
+
+        // Service Worker Registration (for offline functionality)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                // Service worker would be registered here in a real application
+                console.log('Service Worker support detected');
+            });
+        }
+
+        // Performance Monitoring
+        window.addEventListener('load', function() {
+            const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart;
+            console.log(`Page loaded in ${loadTime}ms`);
+            
+            // Track Core Web Vitals
+            if ('PerformanceObserver' in window) {
+                // Largest Contentful Paint
+                new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        console.log('LCP:', entry.startTime);
+                    }
+                }).observe({entryTypes: ['largest-contentful-paint']});
+                
+                // First Input Delay
+                new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        console.log('FID:', entry.processingStart - entry.startTime);
+                    }
+                }).observe({entryTypes: ['first-input']});
+            }
+        });
+
+        // Keyboard Navigation Enhancement
+        document.addEventListener('keydown', function(e) {
+            // ESC key closes modals
+            if (e.key === 'Escape') {
+                closeModal();
+            }
+            
+            // Tab navigation highlighting
+            if (e.key === 'Tab') {
+                document.body.classList.add('keyboard-navigation');
+            }
+        });
+
+        // Remove keyboard navigation class on mouse click
+        document.addEventListener('click', function() {
+            document.body.classList.remove('keyboard-navigation');
+        });
+
+        // Dynamic Theme Switching (Light/Dark mode toggle)
+        function toggleTheme() {
+            const isDark = document.body.classList.contains('light-theme');
+            document.body.classList.toggle('light-theme', !isDark);
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'light') {
+            document.body.classList.add('light-theme');
+        }
+
+        // Error Handling for Images and External Resources
+        document.querySelectorAll('img').forEach(img => {
+            img.addEventListener('error', function() {
+                this.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkltYWdlIG5vdCBmb3VuZDwvdGV4dD48L3N2Zz4=';
+            });
+        });
+
+        // Advanced Form Validation
+        function validateForm(form) {
+            const inputs = form.querySelectorAll('input[required], textarea[required]');
+            let isValid = true;
+            
+            inputs.forEach(input => {
+                const value = input.value.trim();
+                
+                if (!value) {
+                    showFieldError(input, 'This field is required');
+                    isValid = false;
+                } else if (input.type === 'email' && !isValidEmail(value)) {
+                    showFieldError(input, 'Please enter a valid email address');
+                    isValid = false;
+                } else {
+                    clearFieldError(input);
+                }
+            });
+            
+            return isValid;
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        function showFieldError(input, message) {
+            clearFieldError(input);
+            input.style.borderColor = '#ef4444';
+            
+            const errorElement = document.createElement('div');
+            errorElement.className = 'field-error';
+            errorElement.textContent = message;
+            errorElement.style.cssText = `
+                color: #ef4444;
+                font-size: 0.875rem;
+                margin-top: 0.25rem;
+            `;
+            
+            input.parentElement.appendChild(errorElement);
+        }
+
+        function clearFieldError(input) {
+            input.style.borderColor = '';
+            const existingError = input.parentElement.querySelector('.field-error');
+            if (existingError) {
+                existingError.remove();
+            }
+        }
+
+        // Update form submissions to use validation
+        document.getElementById('contactForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            if (!validateForm(this)) {
+                return;
+            }
+            
+            const submitBtn = this.querySelector('.submit-btn');
+            const originalText = submitBtn.textContent;
+            
+            submitBtn.textContent = 'Sending...';
+            submitBtn.disabled = true;
+            
+            setTimeout(() => {
+                showModal('successModal');
+                this.reset();
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }, 1500);
+        });
+
+        // Real-time form validation
+        document.querySelectorAll('input, textarea').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.hasAttribute('required')) {
+                    const value = this.value.trim();
+                    
+                    if (!value) {
+                        showFieldError(this, 'This field is required');
+                    } else if (this.type === 'email' && !isValidEmail(value)) {
+                        showFieldError(this, 'Please enter a valid email address');
+                    } else {
+                        clearFieldError(this);
+                    }
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                clearFieldError(this);
+            });
+        });
+
+        // Analytics Tracking (placeholder for real analytics)
+        function trackEvent(eventName, eventData = {}) {
+            console.log(`Event: ${eventName}`, eventData);
+            // In a real application, this would send data to your analytics service
+        }
+
+        // Track button clicks
+        document.querySelectorAll('button, .cta-btn').forEach(element => {
+            element.addEventListener('click', function() {
+                trackEvent('button_click', {
+                    element: this.textContent.trim(),
+                    location: window.location.pathname
+                });
+            });
+        });
+
+        // Cookie Consent (basic implementation)
+        function showCookieConsent() {
+            if (!localStorage.getItem('cookieConsent')) {
+                const banner = document.createElement('div');
+                banner.style.cssText = `
+                    position: fixed;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    background: var(--card-bg);
+                    border-top: 1px solid rgba(168, 85, 247, 0.3);
+                    padding: 1rem 2rem;
+                    z-index: 10001;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    gap: 2rem;
+                    flex-wrap: wrap;
+                `;
+                
+                banner.innerHTML = `
+                    <p style="color: var(--text-secondary); margin: 0;">
+                        We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.
+                    </p>
+                    <button onclick="acceptCookies()" style="
+                        background: var(--purple-gradient);
+                        border: none;
+                        color: white;
+                        padding: 0.5rem 1rem;
+                        border-radius: 25px;
+                        cursor: pointer;
+                        white-space: nowrap;
+                    ">Accept</button>
+                `;
+                
+                document.body.appendChild(banner);
+                window.cookieBanner = banner;
+            }
+        }
+
+        window.acceptCookies = function() {
+            localStorage.setItem('cookieConsent', 'true');
+            if (window.cookieBanner) {
+                window.cookieBanner.remove();
+            }
+        };
+
+        // Show cookie consent after page load
+        setTimeout(showCookieConsent, 2000);
+
+        // Initialize all components
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Rippers Cloud website initialized successfully!');
+            
+            // Add any additional initialization code here
+            updateBackgroundGradient();
+            
+            // Preload critical resources
+            preloadResources();
+            
+            // Initialize lazy loading for images
+            initLazyLoading();
+            
+            // Start performance monitoring
+            monitorPerformance();
+        });
+
+        // Resource Preloading
+        function preloadResources() {
+            const criticalResources = [
+                'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css'
+            ];
+            
+            criticalResources.forEach(resource => {
+                const link = document.createElement('link');
+                link.rel = 'preload';
+                link.href = resource;
+                link.as = 'style';
+                document.head.appendChild(link);
+            });
+        }
+
+        // Lazy Loading Implementation
+        function initLazyLoading() {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        if (img.dataset.src) {
+                            img.src = img.dataset.src;
+                            img.removeAttribute('data-src');
+                            observer.unobserve(img);
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('img[data-src]').forEach(img => {
+                imageObserver.observe(img);
+            });
+        }
+
+        // Performance Monitoring
+        function monitorPerformance() {
+            // Monitor long tasks
+            if ('PerformanceObserver' in window) {
+                const longTaskObserver = new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        if (entry.duration > 50) {
+                            console.warn('Long task detected:', entry.duration + 'ms');
+                        }
+                    }
+                });
+                longTaskObserver.observe({entryTypes: ['longtask']});
+            }
+
+            // Monitor memory usage
+            if ('memory' in performance) {
+                setInterval(() => {
+                    const memory = performance.memory;
+                    if (memory.usedJSHeapSize / memory.jsHeapSizeLimit > 0.9) {
+                        console.warn('High memory usage detected');
+                    }
+                }, 30000);
+            }
+        }
+
+        // Advanced Cloud Animation System
+        class CloudAnimationSystem {
+            constructor() {
+                this.clouds = [];
+                this.maxClouds = 8;
+                this.container = document.querySelector('.floating-clouds');
+                this.init();
+            }
+
+            init() {
+                this.createClouds();
+                this.animateClouds();
+                this.handleResize();
+            }
+
+            createClouds() {
+                for (let i = 0; i < this.maxClouds; i++) {
+                    const cloud = this.createCloud(i);
+                    this.clouds.push(cloud);
+                    this.container.appendChild(cloud);
+                }
+            }
+
+            createCloud(index) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud dynamic-cloud';
+                
+                const size = Math.random() * 80 + 60; // 60-140px
+                const opacity = Math.random() * 0.3 + 0.1; // 0.1-0.4
+                const speed = Math.random() * 30 + 20; // 20-50s
+                
+                cloud.style.cssText = `
+                    position: absolute;
+                    width: ${size}px;
+                    height: ${size * 0.6}px;
+                    background: rgba(168, 85, 247, ${opacity});
+                    border-radius: 100px;
+                    filter: blur(2px);
+                    top: ${Math.random() * 100}%;
+                    left: -${size + 50}px;
+                    animation: float ${speed}s infinite linear ${Math.random() * 10}s;
+                `;
+
+                return cloud;
+            }
+
+            animateClouds() {
+                setInterval(() => {
+                    this.clouds.forEach((cloud, index) => {
+                        if (Math.random() < 0.1) { // 10% chance to modify cloud
+                            const newOpacity = Math.random() * 0.3 + 0.1;
+                            cloud.style.background = `rgba(168, 85, 247, ${newOpacity})`;
+                        }
+                    });
+                }, 5000);
+            }
+
+            handleResize() {
+                window.addEventListener('resize', () => {
+                    this.clouds.forEach(cloud => {
+                        cloud.style.top = Math.random() * 100 + '%';
+                    });
+                });
+            }
+        }
+
+        // Initialize advanced cloud system
+        const cloudSystem = new CloudAnimationSystem();
+
+        // Interactive Cursor Effects
+        class CursorEffects {
+            constructor() {
+                this.cursor = null;
+                this.trail = [];
+                this.maxTrail = 20;
+                this.init();
+            }
+
+            init() {
+                this.createCursor();
+                this.bindEvents();
+            }
+
+            createCursor() {
+                this.cursor = document.createElement('div');
+                this.cursor.className = 'custom-cursor';
+                this.cursor.style.cssText = `
+                    position: fixed;
+                    width: 20px;
+                    height: 20px;
+                    background: var(--accent-glow);
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 9998;
+                    opacity: 0;
+                    transition: opacity 0.3s ease;
+                    mix-blend-mode: difference;
+                `;
+                document.body.appendChild(this.cursor);
+            }
+
+            bindEvents() {
+                document.addEventListener('mousemove', (e) => {
+                    this.cursor.style.left = e.clientX - 10 + 'px';
+                    this.cursor.style.top = e.clientY - 10 + 'px';
+                    this.cursor.style.opacity = '0.5';
+                    
+                    this.createTrail(e.clientX, e.clientY);
+                });
+
+                document.addEventListener('mouseleave', () => {
+                    this.cursor.style.opacity = '0';
+                });
+
+                // Scale cursor on interactive elements
+                document.querySelectorAll('button, a, .cta-btn').forEach(el => {
+                    el.addEventListener('mouseenter', () => {
+                        this.cursor.style.transform = 'scale(1.5)';
+                        this.cursor.style.background = 'var(--secondary-purple)';
+                    });
+
+                    el.addEventListener('mouseleave', () => {
+                        this.cursor.style.transform = 'scale(1)';
+                        this.cursor.style.background = 'var(--accent-glow)';
+                    });
+                });
+            }
+
+            createTrail(x, y) {
+                const trailDot = document.createElement('div');
+                trailDot.style.cssText = `
+                    position: fixed;
+                    width: 4px;
+                    height: 4px;
+                    background: var(--accent-glow);
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 9997;
+                    left: ${x - 2}px;
+                    top: ${y - 2}px;
+                    opacity: 0.6;
+                `;
+
+                document.body.appendChild(trailDot);
+                this.trail.push(trailDot);
+
+                // Animate trail dot
+                setTimeout(() => {
+                    trailDot.style.opacity = '0';
+                    trailDot.style.transform = 'scale(0)';
+                    trailDot.style.transition = 'all 0.5s ease';
+                }, 100);
+
+                setTimeout(() => {
+                    trailDot.remove();
+                }, 600);
+
+                // Limit trail length
+                if (this.trail.length > this.maxTrail) {
+                    const oldDot = this.trail.shift();
+                    if (oldDot && oldDot.parentNode) {
+                        oldDot.remove();
+                    }
+                }
+            }
+        }
+
+        // Initialize cursor effects on desktop
+        if (window.innerWidth > 768 && !('ontouchstart' in window)) {
+            const cursorEffects = new CursorEffects();
+        }
+
+        // Advanced Loading States
+        class LoadingManager {
+            constructor() {
+                this.activeLoaders = new Map();
+            }
+
+            show(element, options = {}) {
+                const config = {
+                    text: 'Loading...',
+                    spinner: true,
+                    overlay: false,
+                    ...options
+                };
+
+                const loaderId = Math.random().toString(36).substr(2, 9);
+                const originalContent = element.innerHTML;
+                const originalState = {
+                    disabled: element.disabled,
+                    innerHTML: originalContent
+                };
+
+                this.activeLoaders.set(loaderId, { element, originalState });
+
+                if (config.overlay) {
+                    element.style.position = 'relative';
+                    const overlay = document.createElement('div');
+                    overlay.className = 'loading-overlay';
+                    overlay.style.cssText = `
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(15, 15, 35, 0.8);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 10;
+                        border-radius: inherit;
+                    `;
+                    overlay.innerHTML = this.createLoader(config);
+                    element.appendChild(overlay);
+                } else {
+                    element.innerHTML = this.createLoader(config);
+                    element.disabled = true;
+                }
+
+                return loaderId;
+            }
+
+            hide(loaderId) {
+                const loader = this.activeLoaders.get(loaderId);
+                if (!loader) return;
+
+                const { element, originalState } = loader;
+                const overlay = element.querySelector('.loading-overlay');
+                
+                if (overlay) {
+                    overlay.remove();
+                } else {
+                    element.innerHTML = originalState.innerHTML;
+                    element.disabled = originalState.disabled;
+                }
+
+                this.activeLoaders.delete(loaderId);
+            }
+
+            createLoader(config) {
+                const spinner = config.spinner ? '<i class="fas fa-spinner fa-spin"></i>' : '';
+                return `${spinner} ${config.text}`;
+            }
+        }
+
+        const loadingManager = new LoadingManager();
+
+        // Enhanced Error Handling
+        class ErrorHandler {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                window.addEventListener('error', this.handleError.bind(this));
+                window.addEventListener('unhandledrejection', this.handlePromiseRejection.bind(this));
+            }
+
+            handleError(event) {
+                console.error('JavaScript Error:', {
+                    message: event.message,
+                    filename: event.filename,
+                    lineno: event.lineno,
+                    colno: event.colno,
+                    error: event.error
+                });
+                
+                this.showErrorToast('Something went wrong. Please refresh the page.');
+            }
+
+            handlePromiseRejection(event) {
+                console.error('Unhandled Promise Rejection:', event.reason);
+                this.showErrorToast('An unexpected error occurred.');
+            }
+
+            showErrorToast(message) {
+                const toast = document.createElement('div');
+                toast.className = 'error-toast';
+                toast.style.cssText = `
+                    position: fixed;
+                    top: 2rem;
+                    right: 2rem;
+                    background: #ef4444;
+                    color: white;
+                    padding: 1rem 2rem;
+                    border-radius: 10px;
+                    z-index: 10002;
+                    animation: slideIn 0.3s ease;
+                    max-width: 400px;
+                    box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+                `;
+                
+                toast.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <i class="fas fa-exclamation-circle"></i>
+                        <span>${message}</span>
+                        <button onclick="this.parentElement.parentElement.remove()" 
+                                style="background: none; border: none; color: white; margin-left: auto; cursor: pointer;">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+
+                document.body.appendChild(toast);
+
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.style.animation = 'slideOut 0.3s ease';
+                        setTimeout(() => toast.remove(), 300);
+                    }
+                }, 5000);
+            }
+        }
+
+        const errorHandler = new ErrorHandler();
+
+        // Add slide animations for toasts
+        const toastStyles = document.createElement('style');
+        toastStyles.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(toastStyles);
+
+        // Progressive Web App functionality
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', async () => {
+                try {
+                    // Service worker registration would go here
+                    console.log('PWA capabilities detected');
+                } catch (error) {
+                    console.warn('Service worker registration failed:', error);
+                }
+            });
+        }
+
+        // Accessibility Enhancements
+        class AccessibilityManager {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                this.addSkipLinks();
+                this.enhanceKeyboardNavigation();
+                this.addAriaLabels();
+                this.setupFocusManagement();
+            }
+
+            addSkipLinks() {
+                const skipLink = document.createElement('a');
+                skipLink.href = '#main-content';
+                skipLink.className = 'skip-link';
+                skipLink.textContent = 'Skip to main content';
+                skipLink.style.cssText = `
+                    position: absolute;
+                    top: -40px;
+                    left: 6px;
+                    background: var(--primary-purple);
+                    color: white;
+                    padding: 8px;
+                    text-decoration: none;
+                    z-index: 10003;
+                    border-radius: 4px;
+                `;
+
+                skipLink.addEventListener('focus', () => {
+                    skipLink.style.top = '6px';
+                });
+
+                skipLink.addEventListener('blur', () => {
+                    skipLink.style.top = '-40px';
+                });
+
+                document.body.insertBefore(skipLink, document.body.firstChild);
+            }
+
+            enhanceKeyboardNavigation() {
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Tab') {
+                        document.body.classList.add('keyboard-nav');
+                    }
+                });
+
+                document.addEventListener('click', () => {
+                    document.body.classList.remove('keyboard-nav');
+                });
+            }
+
+            addAriaLabels() {
+                // Add aria labels to interactive elements without labels
+                document.querySelectorAll('button, a').forEach(el => {
+                    if (!el.getAttribute('aria-label') && !el.textContent.trim()) {
+                        const icon = el.querySelector('i');
+                        if (icon) {
+                            const classList = Array.from(icon.classList);
+                            const iconName = classList.find(cls => cls.startsWith('fa-'))?.replace('fa-', '') || 'button';
+                            el.setAttribute('aria-label', iconName.replace('-', ' '));
+                        }
+                    }
+                });
+            }
+
+            setupFocusManagement() {
+                // Trap focus in modals
+                document.querySelectorAll('.modal').forEach(modal => {
+                    const focusableElements = modal.querySelectorAll(
+                        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                    );
+                    
+                    if (focusableElements.length === 0) return;
+
+                    const firstFocusable = focusableElements[0];
+                    const lastFocusable = focusableElements[focusableElements.length - 1];
+
+                    modal.addEventListener('keydown', (e) => {
+                        if (e.key === 'Tab') {
+                            if (e.shiftKey) {
+                                if (document.activeElement === firstFocusable) {
+                                    lastFocusable.focus();
+                                    e.preventDefault();
+                                }
+                            } else {
+                                if (document.activeElement === lastFocusable) {
+                                    firstFocusable.focus();
+                                    e.preventDefault();
+                                }
+                            }
+                        }
+                    });
+                });
+            }
+        }
+
+        const accessibilityManager = new AccessibilityManager();
+
+        // Final initialization
+        console.log('🚀 Rippers Cloud website fully loaded and optimized!');
+        
+        // Add main content ID for skip link
+        document.querySelector('.main-content').id = 'main-content';
+        
+        // Announce to screen readers when page is ready
+        const announcement = document.createElement('div');
+        announcement.setAttribute('aria-live', 'polite');
+        announcement.setAttribute('aria-atomic', 'true');
+        announcement.className = 'sr-only';
+        announcement.style.cssText = `
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        `;
+        announcement.textContent = 'Rippers Cloud website loaded successfully';
+        document.body.appendChild(announcement);
+    </script>
+</body>
+</html>
